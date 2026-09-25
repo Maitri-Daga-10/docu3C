@@ -399,34 +399,142 @@ def format_chunk_for_llm(chunk: list[TranscriptLine]) -> str:
 # 3. LLM TOPIC DETECTION
 # --------------------------------------------------------------------------
 
-SYSTEM_PROMPT = """You are a legal deposition analyst. You will be given a
-window of deposition transcript text. Every line is tagged with its exact
-[PAGE n | LINE m] identifier copied from the original transcript.
+SYSTEM_PROMPT = """You are a legal deposition analyst.
 
-Identify substantive topics discussed in this window (ignore procedural
-chatter like "let's take a break" or court-reporter interruptions unless
-that IS the point being discussed). For each topic return:
-  - "topic": short descriptive label
-  - "start_page" / "start_line": the identifier of the first line of this topic
-  - "end_page" / "end_line": the identifier of the last line of this topic
-  - "evidence_page" / "evidence_line": one identifier that best supports the topic
-  - "kind": one of "new_topic" | "continuation" | "digression" | "return_to_earlier"
+You will be given a window of deposition transcript text. Every line is
+tagged with its exact [PAGE n | LINE m] identifier copied from the original
+transcript.
 
-RULES:
-- You may ONLY use page/line identifiers that literally appear in the
-  supplied text. Never invent, estimate, or renumber identifiers.
-- Use topic-level granularity (a handful of topics per window), not one
-  topic per question and answer.
-- Return ONLY a JSON array of topic objects. No prose, no markdown fences.
+Identify substantive topics discussed in this window.
+
+For each topic return:
+
+- "topic": broad topic label
+- "subtopic": more specific aspect of the topic
+- "start_page": first page of the topic
+- "start_line": first line of the topic
+- "end_page": last page of the topic
+- "end_line": last line of the topic
+- "supporting_evidence": {
+    "page": page containing the strongest supporting evidence,
+    "line": line containing the strongest supporting evidence,
+    "quote": exact quote copied from that line
+  }
+- "kind": one of:
+    "new_topic" | "continuation" | "digression" | "return_to_earlier"
+
+IMPORTANT RULES:
+
+1. You may ONLY use page/line identifiers that literally appear in the
+   supplied transcript.
+
+2. Never invent, estimate, or renumber page or line identifiers.
+
+3. The supporting evidence quote must be copied from the cited transcript
+   line.
+
+4. The topic should describe the broader subject being discussed.
+
+5. The subtopic should describe the specific aspect being discussed.
+
+6. The topic and subtopic must be supported by the transcript.
+
+7. Use topic-level granularity. Do not create one topic for every question
+   and answer.
+
+8. Ignore procedural chatter unless it is itself the substantive topic.
+
+9. Return ONLY a JSON array. No markdown. No explanation.
+
+Example:
+
+[
+  {
+    "topic": "Employment History",
+    "subtopic": "Employment at ABC Corporation",
+    "start_page": 20,
+    "start_line": 5,
+    "end_page": 21,
+    "end_line": 12,
+    "supporting_evidence": {
+      "page": 20,
+      "line": 8,
+      "quote": "I joined ABC Corporation in 2019."
+    },
+    "kind": "new_topic"
+  }
+]
 """
 
+SEMANTIC_VALIDATION_SYSTEM_PROMPT = """You are a legal deposition semantic validator.
 
-USER_PROMPT_TEMPLATE = """TRANSCRIPT WINDOW:
-{chunk_text}
+You will be given:
 
-Return the JSON array of topics for this window now.
+1. A detected topic.
+2. A detected subtopic.
+3. Supporting evidence from the transcript.
+4. Surrounding transcript context.
+5. The full transcript span assigned to the topic.
+
+Your job is to determine whether the detected topic and subtopic are
+actually supported by the transcript.
+
+IMPORTANT:
+
+- Do NOT judge whether page or line numbers are valid.
+- Python has already checked the provenance.
+- Judge semantic meaning only.
+- Do NOT assume that similar words mean the evidence is relevant.
+- The evidence must meaningfully support the topic.
+- The evidence must meaningfully support the subtopic.
+- The surrounding context should be consistent with the topic and subtopic.
+- The full topic span should substantially discuss the claimed topic/subtopic.
+- If the evidence is unrelated, return false.
+- If the subtopic is too specific or unsupported, return false.
+- If the span contains a different subject and the claimed topic is not
+  supported, return false.
+- Be conservative. When the evidence is weak or ambiguous, return false.
+
+Return ONLY valid JSON in exactly this structure:
+
+{
+  "topic_supported": true,
+  "subtopic_supported": true,
+  "evidence_supported": true,
+  "span_supported": true,
+  "confidence": 0.0,
+  "reason": "short explanation"
+}
+
+The confidence must be a number between 0 and 1.
 """
 
+SEMANTIC_VALIDATION_USER_PROMPT = """Validate the following deposition topic.
+
+TOPIC:
+{topic}
+
+SUBTOPIC:
+{subtopic}
+
+SUPPORTING EVIDENCE:
+{evidence}
+
+SURROUNDING TRANSCRIPT CONTEXT:
+{context}
+
+FULL TOPIC SPAN:
+{span}
+
+Determine whether:
+
+1. The evidence supports the topic.
+2. The evidence supports the subtopic.
+3. The evidence itself is relevant.
+4. The full topic span supports the topic and subtopic.
+
+Return only the required JSON.
+"""
 
 def call_llm(
     system_prompt: str,
@@ -434,6 +542,8 @@ def call_llm(
     model: str = "gpt-4o-mini",
 ) -> str:
     """
+
+    
     Calls the configured LLM API.
 
     Requires OPENAI_API_KEY to be set in the environment.
@@ -502,6 +612,91 @@ def _load_offline_cache(cache_path: str) -> list[dict]:
         return json.load(f)
 
 
+
+def get_context_for_topic(
+    topic: dict,
+    lines: list[TranscriptLine],
+    context_lines: int = 5,
+) -> str:
+    """
+    Get a small amount of transcript surrounding the topic's
+    supporting evidence.
+
+    This context is provided to the semantic validator so that
+    it can understand the topic in its conversational context.
+    """
+
+    evidence = topic.get("supporting_evidence") or {}
+
+    evidence_page = evidence.get("page")
+    evidence_line = evidence.get("line")
+
+    if evidence_page is None or evidence_line is None:
+        return ""
+
+    # Find the evidence line in the extracted transcript.
+    evidence_index = None
+
+    for i, record in enumerate(lines):
+        if (
+            record.page == evidence_page
+            and record.line == evidence_line
+        ):
+            evidence_index = i
+            break
+
+    if evidence_index is None:
+        return ""
+
+    start = max(0, evidence_index - context_lines)
+    end = min(len(lines), evidence_index + context_lines + 1)
+
+    context = []
+
+    for record in lines[start:end]:
+        context.append(
+            f"[PAGE {record.page} | LINE {record.line}]\n"
+            f"{record.text}"
+        )
+
+    return "\n".join(context)
+
+def get_span_for_topic(
+    topic: dict,
+    lines: list[TranscriptLine],
+) -> str:
+    """
+    Returns the complete transcript span assigned to the topic.
+
+    This is used by the semantic validator to determine whether the
+    entire detected span actually discusses the claimed topic/subtopic.
+    """
+
+    start_key = (
+        topic.get("start_page"),
+        topic.get("start_line"),
+    )
+
+    end_key = (
+        topic.get("end_page"),
+        topic.get("end_line"),
+    )
+
+    if None in start_key or None in end_key:
+        return ""
+
+    span = []
+
+    for record in lines:
+        key = (record.page, record.line)
+
+        if start_key <= key <= end_key:
+            span.append(
+                f"[PAGE {record.page} | LINE {record.line}]\n"
+                f"{record.text}"
+            )
+
+    return "\n".join(span)
 # --------------------------------------------------------------------------
 # 4. DETERMINISTIC PROVENANCE VALIDATION
 # --------------------------------------------------------------------------
@@ -535,6 +730,7 @@ def validate_topic(
 
     required = [
         "topic",
+        "subtopic",
         "start_page",
         "start_line",
         "end_page",
@@ -694,6 +890,220 @@ def validate_all(
 
     return accepted, rejected
 
+
+def semantic_validate_topic(
+    topic: dict,
+    lines: list[TranscriptLine],
+) -> ValidationResult:
+    """
+    Uses an LLM to determine whether the detected topic,
+    subtopic, evidence, and full transcript span are
+    semantically supported.
+    """
+
+    topic_name = topic.get("topic", "").strip()
+    subtopic_name = topic.get("subtopic", "").strip()
+
+    evidence = topic.get("supporting_evidence") or {}
+    evidence_quote = evidence.get("quote", "").strip()
+
+    if not topic_name:
+        return ValidationResult(
+            False,
+            ["missing topic for semantic validation"],
+        )
+
+    if not subtopic_name:
+        return ValidationResult(
+            False,
+            ["missing subtopic for semantic validation"],
+        )
+
+    if not evidence_quote:
+        return ValidationResult(
+            False,
+            ["missing supporting evidence for semantic validation"],
+        )
+
+    context = get_context_for_topic(
+        topic,
+        lines,
+    )
+
+    span = get_span_for_topic(
+        topic,
+        lines,
+    )
+
+    if not span:
+        return ValidationResult(
+            False,
+            ["could not construct transcript span for semantic validation"],
+        )
+
+    user_prompt = SEMANTIC_VALIDATION_USER_PROMPT.format(
+        topic=topic_name,
+        subtopic=subtopic_name,
+        evidence=evidence_quote,
+        context=context,
+        span=span,
+    )
+
+    try:
+        response = call_llm(
+            SEMANTIC_VALIDATION_SYSTEM_PROMPT,
+            user_prompt,
+        )
+
+        result = json.loads(response)
+
+    except (json.JSONDecodeError, RuntimeError, KeyError) as exc:
+        return ValidationResult(
+            False,
+            [f"semantic validation failed: {exc}"],
+        )
+
+    required_boolean_fields = [
+        "topic_supported",
+        "subtopic_supported",
+        "evidence_supported",
+        "span_supported",
+    ]
+
+    for field in required_boolean_fields:
+        if not isinstance(result.get(field), bool):
+            return ValidationResult(
+                False,
+                [
+                    f"semantic validator returned invalid "
+                    f"'{field}' value"
+                ],
+            )
+
+    confidence = result.get("confidence")
+
+    if not isinstance(confidence, (int, float)):
+        return ValidationResult(
+            False,
+            ["semantic validator returned invalid confidence"],
+        )
+
+    if not 0 <= confidence <= 1:
+        return ValidationResult(
+            False,
+            ["semantic validator confidence must be between 0 and 1"],
+        )
+
+    reason = result.get(
+        "reason",
+        "No reason provided by semantic validator.",
+    )
+
+    # ----------------------------------------------------------
+    # FINAL SEMANTIC DECISION
+    # ----------------------------------------------------------
+
+    if not result["topic_supported"]:
+        return ValidationResult(
+            False,
+            [
+                "topic is not semantically supported: "
+                f"{reason}"
+            ],
+        )
+
+    if not result["subtopic_supported"]:
+        return ValidationResult(
+            False,
+            [
+                "subtopic is not semantically supported: "
+                f"{reason}"
+            ],
+        )
+
+    if not result["evidence_supported"]:
+        return ValidationResult(
+            False,
+            [
+                "supporting evidence is not semantically relevant: "
+                f"{reason}"
+            ],
+        )
+
+    if not result["span_supported"]:
+        return ValidationResult(
+            False,
+            [
+                "full transcript span does not support the topic/subtopic: "
+                f"{reason}"
+            ],
+        )
+
+    if confidence < 0.70:
+        return ValidationResult(
+            False,
+            [
+                "semantic support confidence is below threshold "
+                f"(0.70): {confidence}"
+            ],
+        )
+
+    return ValidationResult(
+        True,
+        [],
+    )
+
+
+def semantic_validate_all(
+    topics: list[dict],
+    lines: list[TranscriptLine],
+) -> tuple[list[dict], list[dict]]:
+    """
+    Runs semantic validation on topics that have already passed
+    deterministic provenance validation.
+
+    Returns:
+        semantically accepted topics
+        semantically rejected topics with reasons
+    """
+
+    accepted = []
+    rejected = []
+
+    for topic in topics:
+
+        result = semantic_validate_topic(
+            topic,
+            lines,
+        )
+
+        if result.valid:
+
+            topic_with_validation = dict(topic)
+
+            topic_with_validation[
+                "semantic_validation"
+            ] = {
+                "valid": True,
+            }
+
+            accepted.append(
+                topic_with_validation
+            )
+
+        else:
+
+            rejected.append(
+                {
+                    **topic,
+                    "semantic_validation": {
+                        "valid": False,
+                        "reasons": result.reasons,
+                    },
+                }
+            )
+
+    return accepted, rejected
 
 # --------------------------------------------------------------------------
 # 5. MERGE / DEDUPLICATE
@@ -928,14 +1338,21 @@ def run_pipeline(
         raw_topics,
         lines,
     )
+# --------------------------------------------------------------
+# STEP 4 (Additionally added): Semantic validation
+# --------------------------------------------------------------
 
+    semantic_accepted, semantic_rejected = semantic_validate_all(
+    accepted,
+    lines,
+)
 
     # --------------------------------------------------------------
     # STEP 4: Merge overlapping duplicate topics
     # --------------------------------------------------------------
 
     merged = merge_topics(
-        accepted
+        semantic_accepted
     )
 
 
@@ -955,14 +1372,13 @@ def run_pipeline(
         "total_lines_extracted": len(lines),
 
         "raw_topics_from_llm": len(raw_topics),
-
-        "accepted_topics": len(accepted),
-
-        "rejected_topics": len(rejected),
-
+        "accepted_topics_after_provenance": len(accepted),
+        "rejected_topics_by_provenance": len(rejected),
+        "semantic_validation_checked": len(accepted),
+        "semantic_validation_accepted": len(semantic_accepted),
+        "semantic_validation_rejected": len(semantic_rejected),
         "rejected_detail": rejected,
-
-        "final_topic_count_after_merge": len(merged),
+        "semantic_rejected_detail": semantic_rejected,"final_topic_count_after_merge": len(merged),
     }
 
 
@@ -990,6 +1406,10 @@ def to_markdown(
         lines.append(
             f"## {t['topic']}"
         )
+        if t.get("subtopic"):
+            lines.append(
+                f"- **Subtopic:** {t['subtopic']}"
+                )
 
 
         lines.append(
@@ -1146,10 +1566,16 @@ def main():
 
 
     print(
-        f"Validation accepted "
-        f"{report['accepted_topics']}, "
-        f"rejected "
-        f"{report['rejected_topics']}"
+    f"Provenance validation accepted "
+    f"{report['accepted_topics_after_provenance']}, "
+    f"rejected "
+    f"{report['rejected_topics_by_provenance']}"
+    )
+    print(
+    f"Semantic validation accepted "
+    f"{report['semantic_validation_accepted']}, "
+    f"rejected "
+    f"{report['semantic_validation_rejected']}"
     )
 
 
