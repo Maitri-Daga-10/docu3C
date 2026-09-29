@@ -819,23 +819,40 @@ def validate_topic(
 
         else:
 
-            quote = evidence.get("quote", "")
+            quote = evidence.get("quote", "").strip()
 
             actual_text = line_index[ev_key]
 
+            # Supporting evidence quotes may span multiple transcript lines.
+            # Start at the cited page/line and inspect a short forward span.
+            evidence_span = []
 
-            # The quoted text must genuinely match the cited line.
-            #
-            # We check the first 15 characters in either direction.
+            for record in lines:
+                key = (record.page, record.line)
+
+                if key < ev_key:
+                    continue
+
+                if key > (ev_key[0], ev_key[1] + 5):
+                    break
+
+                evidence_span.append(record.text)
+
+            actual_span = " ".join(evidence_span)
+
+            # Normalize whitespace because PDF extraction can split a
+            # continuous sentence across multiple physical transcript lines.
+            normalized_quote = " ".join(quote.split())
+            normalized_actual = " ".join(actual_span.split())
+
+            # The quoted text must genuinely occur in the transcript span.
             if (
-                quote
-                and actual_text[:15] not in quote
-                and quote[:15] not in actual_text
+                normalized_quote
+                and normalized_quote not in normalized_actual
             ):
-
                 reasons.append(
                     "supporting evidence text does not match "
-                    "the cited page/line"
+                    "the cited page/line span"
                 )
 
 
