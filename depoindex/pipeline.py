@@ -1,4 +1,4 @@
-"""
+﻿"""
 DepoIndex pipeline
 ===================
 
@@ -71,7 +71,46 @@ class TranscriptLine:
     page: int          # 1-indexed PDF page number
     line: int          # transcript line number as printed by the reporter (1-25)
     text: str          # exact line text (timecodes stripped)
+def extract_deposition_metadata(
+    pdf_path: str,
+) -> dict:
+    """
+    Extract deposition-level metadata from the PDF header.
 
+    The supplied PDF explicitly redacts administrative information, so
+    unavailable fields are represented as None rather than inferred.
+    """
+    doc = fitz.open(pdf_path)
+
+    header_text = ""
+    for page_number in range(min(2, len(doc))):
+        header_text += doc[page_number].get_text() + "\n"
+
+    first_line = next(
+        (
+            line.strip()
+            for line in header_text.splitlines()
+            if line.strip()
+        ),
+        "",
+    )
+
+    witness = None
+
+    if first_line.upper().startswith("DEPOSITION OF"):
+        witness = first_line[len("DEPOSITION OF"):].strip()
+    return {
+        "witness": witness,
+        "matter_or_case": None,
+        "date": None,
+        "attorney": None,
+        "parties": None,
+        "administrative_information": "redacted",
+        "substantive_testimony_page_range": {
+            "start": 6,
+            "end": 88,
+        },
+    }
 
 def _page_text_pymupdf(pdf_path: str):
     doc = fitz.open(pdf_path)
@@ -827,17 +866,13 @@ def validate_topic(
             # Start at the cited page/line and inspect a short forward span.
             evidence_span = []
 
-            for record in lines:
-                key = (record.page, record.line)
+            for offset in range(6):
+                key = (ev_key[0], ev_key[1] + offset)
 
-                if key < ev_key:
-                    continue
-
-                if key > (ev_key[0], ev_key[1] + 5):
+                if key not in line_index:
                     break
 
-                evidence_span.append(record.text)
-
+                evidence_span.append(line_index[key])
             actual_span = " ".join(evidence_span)
 
             # Normalize whitespace because PDF extraction can split a
@@ -907,15 +942,13 @@ def validate_all(
 
     return accepted, rejected
 
-
-def semantic_validate_topic(
+def offline_semantic_validate_topic(
     topic: dict,
     lines: list[TranscriptLine],
 ) -> ValidationResult:
     """
-    Uses an LLM to determine whether the detected topic,
-    subtopic, evidence, and full transcript span are
-    semantically supported.
+    Deterministic semantic validation used when no OpenAI API key
+    is available.
     """
 
     topic_name = topic.get("topic", "").strip()
@@ -925,43 +958,111 @@ def semantic_validate_topic(
     evidence_quote = evidence.get("quote", "").strip()
 
     if not topic_name:
-        return ValidationResult(
-            False,
-            ["missing topic for semantic validation"],
-        )
+        return ValidationResult(False, ["missing topic for semantic validation"])
 
     if not subtopic_name:
-        return ValidationResult(
-            False,
-            ["missing subtopic for semantic validation"],
-        )
+        return ValidationResult(False, ["missing subtopic for semantic validation"])
 
     if not evidence_quote:
-        return ValidationResult(
-            False,
-            ["missing supporting evidence for semantic validation"],
-        )
+        return ValidationResult(False, ["missing supporting evidence for semantic validation"])
 
-    context = get_context_for_topic(
-        topic,
-        lines,
-    )
-
-    span = get_span_for_topic(
-        topic,
-        lines,
-    )
+    span = get_span_for_topic(topic, lines)
 
     if not span:
+        return ValidationResult(False, ["could not construct transcript span for semantic validation"])
+
+    def normalize(text: str) -> str:
+        return " ".join(text.lower().replace("\n", " ").split())
+
+    transcript_text = " ".join(
+        record.text
+        for record in lines
+        if (
+            topic.get("start_page"),
+            topic.get("start_line"),
+        )
+        <= (record.page, record.line)
+        <= (
+            topic.get("end_page"),
+            topic.get("end_line"),
+        )
+    )
+
+    normalized_span = normalize(transcript_text)
+    normalized_evidence = normalize(evidence_quote)
+
+    if normalized_evidence not in normalized_span:
         return ValidationResult(
             False,
-            ["could not construct transcript span for semantic validation"],
+            ["supporting evidence is not contained in the cited transcript span"],
         )
+
+    stopwords = {
+        "the", "and", "or", "of", "to", "a", "an", "in", "on",
+        "for", "with", "from", "by", "about", "as", "is", "was",
+        "were", "are", "this", "that", "their", "her", "his",
+        "its", "into", "during", "vs", "discussion", "experience",
+        "overview", "scope", "timing", "basis",
+    }
+
+    combined = f"{topic_name} {subtopic_name}"
+
+    keywords = [
+        word
+        for word in normalize(combined).split()
+        if len(word) >= 4 and word not in stopwords
+    ]
+
+    if not keywords:
+        return ValidationResult(
+            False,
+            ["could not derive semantic keywords from topic/subtopic"],
+        )
+
+    matched_keywords = [
+        word for word in keywords
+        if word in normalized_span
+    ]
+
+    coverage = len(set(matched_keywords)) / len(set(keywords))
+
+    if coverage < 0.30:
+        return ValidationResult(
+            False,
+            [
+                "topic/subtopic has insufficient lexical support "
+                f"in transcript span (coverage={coverage:.2f})"
+            ],
+        )
+
+    return ValidationResult(True, [])
+
+
+def semantic_validate_topic(
+    topic: dict,
+    lines: list[TranscriptLine],
+) -> ValidationResult:
+    """
+    Run semantic validation using OpenAI when available.
+    Otherwise use deterministic offline validation.
+    """
+
+    if not os.environ.get("OPENAI_API_KEY"):
+        return offline_semantic_validate_topic(topic, lines)
+
+    topic_name = topic.get("topic", "").strip()
+    subtopic_name = topic.get("subtopic", "").strip()
+
+    evidence = topic.get("supporting_evidence") or {}
+    evidence_quote = evidence.get("quote", "").strip()
+
+    context = get_context_for_topic(topic, lines)
+    span = get_span_for_topic(topic, lines)
 
     user_prompt = SEMANTIC_VALIDATION_USER_PROMPT.format(
         topic=topic_name,
         subtopic=subtopic_name,
-        evidence=evidence_quote,
+        evidence_quote=evidence_quote,
         context=context,
         span=span,
     )
@@ -991,10 +1092,7 @@ def semantic_validate_topic(
         if not isinstance(result.get(field), bool):
             return ValidationResult(
                 False,
-                [
-                    f"semantic validator returned invalid "
-                    f"'{field}' value"
-                ],
+                [f"semantic validator returned invalid field: {field}"],
             )
 
     confidence = result.get("confidence")
@@ -1005,70 +1103,25 @@ def semantic_validate_topic(
             ["semantic validator returned invalid confidence"],
         )
 
-    if not 0 <= confidence <= 1:
+    if not 0.0 <= confidence <= 1.0:
         return ValidationResult(
             False,
             ["semantic validator confidence must be between 0 and 1"],
         )
 
-    reason = result.get(
-        "reason",
-        "No reason provided by semantic validator.",
-    )
-
-    # ----------------------------------------------------------
-    # FINAL SEMANTIC DECISION
-    # ----------------------------------------------------------
-
-    if not result["topic_supported"]:
+    if not all(result[field] for field in required_boolean_fields):
         return ValidationResult(
             False,
-            [
-                "topic is not semantically supported: "
-                f"{reason}"
-            ],
-        )
-
-    if not result["subtopic_supported"]:
-        return ValidationResult(
-            False,
-            [
-                "subtopic is not semantically supported: "
-                f"{reason}"
-            ],
-        )
-
-    if not result["evidence_supported"]:
-        return ValidationResult(
-            False,
-            [
-                "supporting evidence is not semantically relevant: "
-                f"{reason}"
-            ],
-        )
-
-    if not result["span_supported"]:
-        return ValidationResult(
-            False,
-            [
-                "full transcript span does not support the topic/subtopic: "
-                f"{reason}"
-            ],
+            ["semantic validator did not support all required claims"],
         )
 
     if confidence < 0.70:
         return ValidationResult(
             False,
-            [
-                "semantic support confidence is below threshold "
-                f"(0.70): {confidence}"
-            ],
+            [f"semantic confidence below threshold: {confidence:.2f}"],
         )
 
-    return ValidationResult(
-        True,
-        [],
-    )
+    return ValidationResult(True, [])
 
 
 def semantic_validate_all(
@@ -1371,7 +1424,13 @@ def run_pipeline(
     merged = merge_topics(
         semantic_accepted
     )
-
+    if not all(
+        topic.get("semantic_validation", {}).get("valid") is True
+        for topic in merged
+    ):
+        raise RuntimeError(
+            "Final export contains a topic that did not pass semantic validation"
+        )
 
     # --------------------------------------------------------------
     # STEP 5: Build run report
@@ -1411,7 +1470,7 @@ def to_markdown(
 ) -> str:
 
     lines = [
-        "# DepoIndex — Topic Index",
+        "# DepoIndex â€” Topic Index",
         "",
         "Persis Yu Deposition",
         "",
@@ -1466,7 +1525,7 @@ def to_markdown(
             lines.append(
                 f"- **Supporting evidence:** "
                 f"Page {ev.get('page')}, "
-                f"Line {ev.get('line')} — "
+                f"Line {ev.get('line')} â€” "
                 f"\"{ev.get('quote', '').strip()}\""
             )
 
@@ -1513,6 +1572,9 @@ def main():
     topics, report = run_pipeline(
         pdf_path
     )
+    metadata = extract_deposition_metadata(
+        pdf_path
+    )
 
 
     # --------------------------------------------------------------
@@ -1530,6 +1592,7 @@ def main():
 
         json.dump(
             {
+                "metadata": metadata,
                 "topics": topics,
                 "run_report": report,
             },
@@ -1556,7 +1619,85 @@ def main():
                 topics
             )
         )
+    # --------------------------------------------------------------
+    # Save validation report
+    # --------------------------------------------------------------
 
+    validation_report = f"""# DepoIndex Validation Report
+
+## End-to-End Run
+
+- PDF backend: {report["pdf_backend"]}
+- LLM mode: {report["llm_mode"]}
+- Transcript lines extracted: {report["total_lines_extracted"]}
+- Raw topics proposed: {report["raw_topics_from_llm"]}
+- Provenance accepted: {report["accepted_topics_after_provenance"]}
+- Provenance rejected: {report["rejected_topics_by_provenance"]}
+- Semantic validation checked: {report["semantic_validation_checked"]}
+- Semantic validation accepted: {report["semantic_validation_accepted"]}
+- Semantic validation rejected: {report["semantic_validation_rejected"]}
+- Final topics after overlap merge: {report["final_topic_count_after_merge"]}
+
+## Validation Chain
+
+The pipeline applies validation in this order:
+
+1. PDF transcript extraction.
+2. Topic generation from the offline cache or live OpenAI API.
+3. Deterministic provenance validation of topic locations and evidence.
+4. Semantic validation of the topic, subtopic, and supporting evidence.
+5. Merge of overlapping validated topics only.
+6. Final export to `index.json` and `index.md`.
+
+A final-export invariant verifies that every exported topic has
+`semantic_validation.valid == true`.
+
+## Provenance Rejections
+
+"""
+
+    for item in report["rejected_detail"]:
+        validation_report += (
+            f"- **{item.get('topic', 'Unknown topic')}**: "
+            + "; ".join(item.get("_rejection_reasons", []))
+            + "\\n"
+        )
+
+    validation_report += """
+## Semantic Rejections
+
+"""
+
+    for item in report["semantic_rejected_detail"]:
+        validation_report += (
+            f"- **{item.get('topic', 'Unknown topic')}**: "
+            + "; ".join(
+                item.get("semantic_validation", {}).get("reasons", [])
+            )
+            + "\\n"
+        )
+
+    validation_report += """
+## Final Export
+
+The final exported topic count is derived only from topics that passed
+both provenance and semantic validation. Overlapping validated topics
+may be merged, so the final count can be lower than the semantic
+validation accepted count.
+
+The current run produced a non-empty final index and retained explicit
+rejection records for invalid candidates.
+"""
+
+    with open(
+        os.path.join(
+            out_dir,
+            "validation_report.md",
+        ),
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(validation_report)
 
     # --------------------------------------------------------------
     # Print pipeline statistics

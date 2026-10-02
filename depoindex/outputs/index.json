@@ -1,152 +1,299 @@
 {
-  "topics": [],
+  "metadata": {
+    "witness": "PERSIS YU",
+    "matter_or_case": null,
+    "date": null,
+    "attorney": null,
+    "parties": null,
+    "administrative_information": "redacted",
+    "substantive_testimony_page_range": {
+      "start": 6,
+      "end": 88
+    }
+  },
+  "topics": [
+    {
+      "topic": "Retention and Scope of Expert Assignment",
+      "start_page": 8,
+      "start_line": 24,
+      "end_page": 9,
+      "end_line": 19,
+      "supporting_evidence": {
+        "page": 8,
+        "line": 24,
+        "quote": "So you had been retained as an expert in that -- in this case; correct?"
+      },
+      "kind": "new_topic",
+      "summary": "Witness confirms she was retained as an expert and describes the scope of her assignment regarding ITT and the PEAKS loan program.",
+      "subtopic": "Expert retention and scope of assignment",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Professional Background: SBPC Role and Policy Agenda",
+      "start_page": 9,
+      "start_line": 20,
+      "end_page": 14,
+      "end_line": 1,
+      "supporting_evidence": {
+        "page": 9,
+        "line": 20,
+        "quote": "A couple other questions now. A Sure."
+      },
+      "kind": "new_topic",
+      "summary": "Witness describes her role as Deputy Executive Director of the Student Borrower Protection Center and its policy priorities.",
+      "subtopic": "Professional background and SBPC policy work",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Experience with Student Loan Servicing Transfers",
+      "start_page": 16,
+      "start_line": 16,
+      "end_page": 22,
+      "end_line": 25,
+      "supporting_evidence": {
+        "page": 16,
+        "line": 16,
+        "quote": "Q And have you worked on any initiatives that were directed at student loan servicers?"
+      },
+      "kind": "new_topic",
+      "summary": "Witness discusses her experience with loan servicers transferring portfolios and the risks of data loss to borrowers during transfers.",
+      "subtopic": "Experience with student loan servicing transfers",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Regulatory Framework Governing Servicer Data Transfers",
+      "start_page": 23,
+      "start_line": 1,
+      "end_page": 24,
+      "end_line": 13,
+      "supporting_evidence": {
+        "page": 23,
+        "line": 1,
+        "quote": "Q Are you aware of any occasion when one student loan servicer stepped away from servicing a portfolio and"
+      },
+      "kind": "new_topic",
+      "summary": "Discussion of state laws (e.g., California) governing data-transfer obligations between student loan servicers, applied to the Access Group-to-Vervent transfer.",
+      "subtopic": "Regulatory requirements for servicer data transfers",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Witness's Limited Criminal Law / RICO Experience",
+      "start_page": 24,
+      "start_line": 14,
+      "end_page": 26,
+      "end_line": 14,
+      "supporting_evidence": {
+        "page": 24,
+        "line": 14,
+        "quote": "Q Okay. Have you ever had a job related to criminal law?"
+      },
+      "kind": "new_topic",
+      "summary": "Witness describes her limited criminal-law background and handful of prior matters touching on RICO analysis; confirms her report offers no RICO opinion.",
+      "subtopic": "Criminal law and RICO experience",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Overview of For-Profit Colleges and ITT's Educational Value",
+      "start_page": 27,
+      "start_line": 1,
+      "end_page": 31,
+      "end_line": 20,
+      "supporting_evidence": {
+        "page": 27,
+        "line": 1,
+        "quote": "Q Okay. Thank you. You provide -- the initial background, you"
+      },
+      "kind": "new_topic",
+      "summary": "Witness discusses her expertise in student lending, ITT's retention/default rates, and her view that ITT students often received little value relative to their debt.",
+      "subtopic": "For-profit colleges and ITT educational value",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Outlier Analysis: Individual ITT Graduate Outcomes vs. Aggregate Data",
+      "start_page": 31,
+      "start_line": 21,
+      "end_page": 42,
+      "end_line": 4,
+      "supporting_evidence": {
+        "page": 31,
+        "line": 21,
+        "quote": "Q Okay. So a couple sort of big-picture questions. One --"
+      },
+      "kind": "new_topic",
+      "summary": "Extended hypothetical questioning about whether an ITT graduate whose income doubled would be an 'outlier'; witness maintains such outcomes are atypical based on aggregate data.",
+      "subtopic": "ITT graduate outcomes and aggregate data analysis",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Vervent's Role and Timing Relative to PEAKS Loan Origination",
+      "start_page": 42,
+      "start_line": 5,
+      "end_page": 44,
+      "end_line": 13,
+      "supporting_evidence": {
+        "page": 42,
+        "line": 5,
+        "quote": "Another big-picture issue here. I mean, you're -- you're familiar with when people entered into"
+      },
+      "kind": "new_topic",
+      "summary": "Witness confirms Vervent took over PEAKS loan servicing in late 2011, after origination, and had no role in recruiting students to ITT.",
+      "subtopic": "Vervent's role in PEAKS loan origination",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Scope of Opinion on PEAKS Loan Enforceability and Documentation Defects",
+      "start_page": 44,
+      "start_line": 14,
+      "end_page": 53,
+      "end_line": 18,
+      "supporting_evidence": {
+        "page": 44,
+        "line": 14,
+        "quote": "loans; is that correct? A I have -- I have reviewed the materials that --"
+      },
+      "kind": "new_topic",
+      "summary": "Witness explains that her report does not opine on legal enforceability but identifies missing loan documents (promissory notes, disclosures) as material defects.",
+      "subtopic": "PEAKS loan enforceability and documentation defects",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Truth in Lending Act Disclosures and Borrower's Right to Cancel",
+      "start_page": 53,
+      "start_line": 19,
+      "end_page": 60,
+      "end_line": 2,
+      "supporting_evidence": {
+        "page": 53,
+        "line": 19,
+        "quote": "Q Sure, and I'll -- I'll ask a better question. A Okay."
+      },
+      "kind": "new_topic",
+      "summary": "Detailed exchange on TILA disclosure requirements, the borrower's right to cancel when disclosures are missing, and the length of any grace/cure period.",
+      "subtopic": "Truth in Lending Act disclosures and cancellation rights",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Post-Origination Events Affecting Loan Enforceability",
+      "start_page": 60,
+      "start_line": 3,
+      "end_page": 63,
+      "end_line": 5,
+      "supporting_evidence": {
+        "page": 60,
+        "line": 3,
+        "quote": "occurred after the loans were originated, aside from this failure to provide disclosures, that would have rendered"
+      },
+      "kind": "return_to_earlier",
+      "summary": "Witness discusses factors beyond origination -- CFPB/DOE findings and the 2020 loan cancellation -- that could affect enforceability, returning to the enforceability topic raised earlier without giving a specific determination date.",
+      "subtopic": "Post-origination events affecting loan enforceability",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "ITT's Public Notoriety and Government Participation in Title IV",
+      "start_page": 63,
+      "start_line": 6,
+      "end_page": 66,
+      "end_line": 25,
+      "supporting_evidence": {
+        "page": 63,
+        "line": 6,
+        "quote": "Q Okay. So do you think it was obvious that ITT was nothing but a fraudulent enterprise if the government"
+      },
+      "kind": "new_topic",
+      "summary": "Cross-examination on whether continued federal Title IV loan eligibility for ITT undercuts the claim that ITT's practices were widely known to be abusive.",
+      "subtopic": "ITT public reputation and Title IV participation",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Servicing vs. Collecting: Vervent's Duties and Legal Basis to Stop Servicing",
+      "start_page": 79,
+      "start_line": 1,
+      "end_page": 82,
+      "end_line": 5,
+      "supporting_evidence": {
+        "page": 79,
+        "line": 1,
+        "quote": "BY MR. PURCELL: Q Okay. Are -- are you aware of any investigation"
+      },
+      "kind": "new_topic",
+      "summary": "Distinction drawn between loan 'servicing' and 'collecting'; witness opines Vervent had information raising enforceability concerns but chose to continue servicing, and no specific statute compels a servicer to stop servicing based on an investigation.",
+      "subtopic": "Vervent servicing and collecting duties",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Timing and Basis for Any Unenforceability Determination",
+      "start_page": 82,
+      "start_line": 6,
+      "end_page": 86,
+      "end_line": 25,
+      "supporting_evidence": {
+        "page": 82,
+        "line": 6,
+        "quote": "BY MR. PURCELL: Q When was the PEAKS loans deemed unenforceable as"
+      },
+      "kind": "return_to_earlier",
+      "summary": "Extended follow-up (return to the earlier enforceability topic) narrowing whether and when the PEAKS loans became unenforceable, tying the analysis back to the fall-2020 CFPB settlement and origination-stage document defects.",
+      "subtopic": "Timing and basis for unenforceability determination",
+      "semantic_validation": {
+        "valid": true
+      }
+    },
+    {
+      "topic": "Absence of Adverse Findings on Vervent's Actual Servicing Conduct",
+      "start_page": 87,
+      "start_line": 1,
+      "end_page": 88,
+      "end_line": 6,
+      "supporting_evidence": {
+        "page": 87,
+        "line": 1,
+        "quote": "occurred, but they're not -- they were outside the scope of my report."
+      },
+      "kind": "new_topic",
+      "summary": "Closing questions confirming the witness recalls no investigation findings specifically criticizing Vervent's day-to-day servicing of the PEAKS loans.",
+      "subtopic": "Findings regarding Vervent's servicing conduct",
+      "semantic_validation": {
+        "valid": true
+      }
+    }
+  ],
   "run_report": {
     "pdf_backend": "pymupdf",
     "llm_mode": "offline_cache",
     "total_lines_extracted": 2036,
     "raw_topics_from_llm": 24,
-    "accepted_topics_after_provenance": 0,
-    "rejected_topics_by_provenance": 24,
-    "semantic_validation_checked": 0,
-    "semantic_validation_accepted": 0,
-    "semantic_validation_rejected": 0,
+    "accepted_topics_after_provenance": 21,
+    "rejected_topics_by_provenance": 3,
+    "semantic_validation_checked": 21,
+    "semantic_validation_accepted": 16,
+    "semantic_validation_rejected": 5,
     "rejected_detail": [
-      {
-        "topic": "Deposition Ground Rules and Admonitions",
-        "start_page": 7,
-        "start_line": 12,
-        "end_page": 8,
-        "end_line": 23,
-        "supporting_evidence": {
-          "page": 7,
-          "line": 12,
-          "quote": "Q Good afternoon, Ms. Yu. My name's John Purcell. I represent the defendants, and we will hopefully get you"
-        },
-        "kind": "new_topic",
-        "summary": "Attorney explains deposition procedure, perjury admonition, and confirms witness understands the process.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Retention and Scope of Expert Assignment",
-        "start_page": 8,
-        "start_line": 24,
-        "end_page": 9,
-        "end_line": 19,
-        "supporting_evidence": {
-          "page": 8,
-          "line": 24,
-          "quote": "So you had been retained as an expert in that -- in this case; correct?"
-        },
-        "kind": "new_topic",
-        "summary": "Witness confirms she was retained as an expert and describes the scope of her assignment regarding ITT and the PEAKS loan program.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Professional Background: SBPC Role and Policy Agenda",
-        "start_page": 9,
-        "start_line": 20,
-        "end_page": 14,
-        "end_line": 1,
-        "supporting_evidence": {
-          "page": 9,
-          "line": 20,
-          "quote": "A couple other questions now. A Sure."
-        },
-        "kind": "new_topic",
-        "summary": "Witness describes her role as Deputy Executive Director of the Student Borrower Protection Center and its policy priorities.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Legislative and Regulatory Advocacy Record",
-        "start_page": 14,
-        "start_line": 2,
-        "end_page": 16,
-        "end_line": 14,
-        "supporting_evidence": {
-          "page": 14,
-          "line": 2,
-          "quote": "Q And do these initials strive to come up with standards that lenders should adhere to or schools, or who"
-        },
-        "kind": "new_topic",
-        "summary": "Witness details her track record influencing federal rulemaking, negotiated rulemaking, and legislation on student loan borrower protections.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Experience with Student Loan Servicing Transfers",
-        "start_page": 16,
-        "start_line": 16,
-        "end_page": 22,
-        "end_line": 25,
-        "supporting_evidence": {
-          "page": 16,
-          "line": 16,
-          "quote": "Q And have you worked on any initiatives that were directed at student loan servicers?"
-        },
-        "kind": "new_topic",
-        "summary": "Witness discusses her experience with loan servicers transferring portfolios and the risks of data loss to borrowers during transfers.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Experience with Student Loan Servicing Transfers",
-        "start_page": 16,
-        "start_line": 16,
-        "end_page": 21,
-        "end_line": 25,
-        "supporting_evidence": {
-          "page": 16,
-          "line": 16,
-          "quote": "Q And have you worked on any initiatives that were directed at student loan servicers?"
-        },
-        "kind": "new_topic",
-        "summary": "Witness discusses her experience with loan servicers transferring portfolios and the risks of data loss to borrowers during transfers.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Regulatory Framework Governing Servicer Data Transfers",
-        "start_page": 23,
-        "start_line": 1,
-        "end_page": 24,
-        "end_line": 13,
-        "supporting_evidence": {
-          "page": 23,
-          "line": 1,
-          "quote": "Q Are you aware of any occasion when one student loan servicer stepped away from servicing a portfolio and"
-        },
-        "kind": "new_topic",
-        "summary": "Discussion of state laws (e.g., California) governing data-transfer obligations between student loan servicers, applied to the Access Group-to-Vervent transfer.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Witness's Limited Criminal Law / RICO Experience",
-        "start_page": 24,
-        "start_line": 14,
-        "end_page": 26,
-        "end_line": 14,
-        "supporting_evidence": {
-          "page": 24,
-          "line": 14,
-          "quote": "Q Okay. Have you ever had a job related to criminal law?"
-        },
-        "kind": "new_topic",
-        "summary": "Witness describes her limited criminal-law background and handful of prior matters touching on RICO analysis; confirms her report offers no RICO opinion.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
       {
         "topic": "Digression: Formatting of Expert Report Paragraph Numbers",
         "start_page": 26,
@@ -160,229 +307,9 @@
         },
         "kind": "digression",
         "summary": "Brief tangent about why paragraph numbering in the expert report stops after paragraph 8; witness confirms it was not a conscious decision.",
+        "subtopic": "Expert report paragraph numbering and formatting",
         "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Overview of For-Profit Colleges and ITT's Educational Value",
-        "start_page": 27,
-        "start_line": 1,
-        "end_page": 31,
-        "end_line": 20,
-        "supporting_evidence": {
-          "page": 27,
-          "line": 1,
-          "quote": "Q Okay. Thank you. You provide -- the initial background, you"
-        },
-        "kind": "new_topic",
-        "summary": "Witness discusses her expertise in student lending, ITT's retention/default rates, and her view that ITT students often received little value relative to their debt.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Outlier Analysis: Individual ITT Graduate Outcomes vs. Aggregate Data",
-        "start_page": 31,
-        "start_line": 21,
-        "end_page": 42,
-        "end_line": 4,
-        "supporting_evidence": {
-          "page": 31,
-          "line": 21,
-          "quote": "Q Okay. So a couple sort of big-picture questions. One --"
-        },
-        "kind": "new_topic",
-        "summary": "Extended hypothetical questioning about whether an ITT graduate whose income doubled would be an 'outlier'; witness maintains such outcomes are atypical based on aggregate data.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Vervent's Role and Timing Relative to PEAKS Loan Origination",
-        "start_page": 42,
-        "start_line": 5,
-        "end_page": 44,
-        "end_line": 13,
-        "supporting_evidence": {
-          "page": 42,
-          "line": 5,
-          "quote": "Another big-picture issue here. I mean, you're -- you're familiar with when people entered into"
-        },
-        "kind": "new_topic",
-        "summary": "Witness confirms Vervent took over PEAKS loan servicing in late 2011, after origination, and had no role in recruiting students to ITT.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Scope of Opinion on PEAKS Loan Enforceability and Documentation Defects",
-        "start_page": 44,
-        "start_line": 14,
-        "end_page": 53,
-        "end_line": 18,
-        "supporting_evidence": {
-          "page": 44,
-          "line": 14,
-          "quote": "loans; is that correct? A I have -- I have reviewed the materials that --"
-        },
-        "kind": "new_topic",
-        "summary": "Witness explains that her report does not opine on legal enforceability but identifies missing loan documents (promissory notes, disclosures) as material defects.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Scope of Opinion on PEAKS Loan Enforceability and Documentation Defects",
-        "start_page": 45,
-        "start_line": 1,
-        "end_page": 53,
-        "end_line": 18,
-        "supporting_evidence": {
-          "page": 44,
-          "line": 14,
-          "quote": "loans; is that correct? A I have -- I have reviewed the materials that --"
-        },
-        "kind": "new_topic",
-        "summary": "Witness explains that her report does not opine on legal enforceability but identifies missing loan documents (promissory notes, disclosures) as material defects.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Truth in Lending Act Disclosures and Borrower's Right to Cancel",
-        "start_page": 53,
-        "start_line": 19,
-        "end_page": 60,
-        "end_line": 2,
-        "supporting_evidence": {
-          "page": 53,
-          "line": 19,
-          "quote": "Q Sure, and I'll -- I'll ask a better question. A Okay."
-        },
-        "kind": "new_topic",
-        "summary": "Detailed exchange on TILA disclosure requirements, the borrower's right to cancel when disclosures are missing, and the length of any grace/cure period.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Post-Origination Events Affecting Loan Enforceability",
-        "start_page": 60,
-        "start_line": 3,
-        "end_page": 63,
-        "end_line": 5,
-        "supporting_evidence": {
-          "page": 60,
-          "line": 3,
-          "quote": "occurred after the loans were originated, aside from this failure to provide disclosures, that would have rendered"
-        },
-        "kind": "return_to_earlier",
-        "summary": "Witness discusses factors beyond origination -- CFPB/DOE findings and the 2020 loan cancellation -- that could affect enforceability, returning to the enforceability topic raised earlier without giving a specific determination date.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "ITT's Public Notoriety and Government Participation in Title IV",
-        "start_page": 63,
-        "start_line": 6,
-        "end_page": 66,
-        "end_line": 25,
-        "supporting_evidence": {
-          "page": 63,
-          "line": 6,
-          "quote": "Q Okay. So do you think it was obvious that ITT was nothing but a fraudulent enterprise if the government"
-        },
-        "kind": "new_topic",
-        "summary": "Cross-examination on whether continued federal Title IV loan eligibility for ITT undercuts the claim that ITT's practices were widely known to be abusive.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Regulatory and Enforcement History: CFPB, SEC, and State AG Actions Against ITT/PEAKS",
-        "start_page": 67,
-        "start_line": 1,
-        "end_page": 75,
-        "end_line": 23,
-        "supporting_evidence": {
-          "page": 67,
-          "line": 1,
-          "quote": "Q You reference a 2012 Consumer Financial Protection Bureau Civil Investigative"
-        },
-        "kind": "new_topic",
-        "summary": "Review of the CFPB Civil Investigative Demand, CFPB/SEC actions, and multi-state AG investigations into ITT, with the witness repeatedly confirming these focused on ITT, not on the Vervent defendants.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Witness's Self-Assessment as a Non-Investigator",
-        "start_page": 76,
-        "start_line": 1,
-        "end_page": 78,
-        "end_line": 23,
-        "supporting_evidence": {
-          "page": 76,
-          "line": 1,
-          "quote": "MR. PURCELL: Let's take a break. MR. BLOOD: Okay."
-        },
-        "kind": "new_topic",
-        "summary": "Witness clarifies she is a policy researcher, not a professional investigator, and explains that the mere existence of an investigation does not establish wrongdoing.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Servicing vs. Collecting: Vervent's Duties and Legal Basis to Stop Servicing",
-        "start_page": 79,
-        "start_line": 1,
-        "end_page": 82,
-        "end_line": 5,
-        "supporting_evidence": {
-          "page": 79,
-          "line": 1,
-          "quote": "BY MR. PURCELL: Q Okay. Are -- are you aware of any investigation"
-        },
-        "kind": "new_topic",
-        "summary": "Distinction drawn between loan 'servicing' and 'collecting'; witness opines Vervent had information raising enforceability concerns but chose to continue servicing, and no specific statute compels a servicer to stop servicing based on an investigation.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Timing and Basis for Any Unenforceability Determination",
-        "start_page": 82,
-        "start_line": 6,
-        "end_page": 86,
-        "end_line": 25,
-        "supporting_evidence": {
-          "page": 82,
-          "line": 6,
-          "quote": "BY MR. PURCELL: Q When was the PEAKS loans deemed unenforceable as"
-        },
-        "kind": "return_to_earlier",
-        "summary": "Extended follow-up (return to the earlier enforceability topic) narrowing whether and when the PEAKS loans became unenforceable, tying the analysis back to the fall-2020 CFPB settlement and origination-stage document defects.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
-        ]
-      },
-      {
-        "topic": "Absence of Adverse Findings on Vervent's Actual Servicing Conduct",
-        "start_page": 87,
-        "start_line": 1,
-        "end_page": 88,
-        "end_line": 6,
-        "supporting_evidence": {
-          "page": 87,
-          "line": 1,
-          "quote": "occurred, but they're not -- they were outside the scope of my report."
-        },
-        "kind": "new_topic",
-        "summary": "Closing questions confirming the witness recalls no investigation findings specifically criticizing Vervent's day-to-day servicing of the PEAKS loans.",
-        "_rejection_reasons": [
-          "missing required field 'subtopic'"
+          "supporting evidence text does not match the cited page/line span"
         ]
       },
       {
@@ -398,8 +325,11 @@
         },
         "kind": "new_topic",
         "summary": "Hallucinated topic -- no such testimony exists at this location.",
+        "subtopic": "Witness compensation arrangement",
         "_rejection_reasons": [
-          "missing required field 'subtopic'"
+          "start location (8, 99) does not exist in the supplied deposition",
+          "end location (8, 100) does not exist in the supplied deposition",
+          "supporting evidence location (8, 99) does not exist in the supplied deposition"
         ]
       },
       {
@@ -415,12 +345,119 @@
         },
         "kind": "new_topic",
         "summary": "Hallucinated evidence text -- does not match the cited line.",
+        "subtopic": "Witness's prior deposition experience",
         "_rejection_reasons": [
-          "missing required field 'subtopic'"
+          "supporting evidence text does not match the cited page/line span"
         ]
       }
     ],
-    "semantic_rejected_detail": [],
-    "final_topic_count_after_merge": 0
+    "semantic_rejected_detail": [
+      {
+        "topic": "Deposition Ground Rules and Admonitions",
+        "subtopic": "Deposition procedure and witness admonitions",
+        "start_page": 7,
+        "start_line": 12,
+        "end_page": 8,
+        "end_line": 23,
+        "supporting_evidence": {
+          "page": 7,
+          "line": 12,
+          "quote": "Q Good afternoon, Ms. Yu. My name's John Purcell. I represent the defendants, and we will hopefully get you"
+        },
+        "kind": "new_topic",
+        "summary": "Attorney explains deposition procedure, perjury admonition, and confirms witness understands the process.",
+        "semantic_validation": {
+          "valid": false,
+          "reasons": [
+            "topic/subtopic has insufficient lexical support in transcript span (coverage=0.17)"
+          ]
+        }
+      },
+      {
+        "topic": "Legislative and Regulatory Advocacy Record",
+        "start_page": 14,
+        "start_line": 2,
+        "end_page": 16,
+        "end_line": 14,
+        "supporting_evidence": {
+          "page": 14,
+          "line": 2,
+          "quote": "Q And do these initials strive to come up with standards that lenders should adhere to or schools, or who"
+        },
+        "kind": "new_topic",
+        "summary": "Witness details her track record influencing federal rulemaking, negotiated rulemaking, and legislation on student loan borrower protections.",
+        "subtopic": "Legislative and regulatory advocacy activities",
+        "semantic_validation": {
+          "valid": false,
+          "reasons": [
+            "topic/subtopic has insufficient lexical support in transcript span (coverage=0.20)"
+          ]
+        }
+      },
+      {
+        "topic": "Scope of Opinion on PEAKS Loan Enforceability and Documentation Defects",
+        "start_page": 45,
+        "start_line": 1,
+        "end_page": 53,
+        "end_line": 18,
+        "supporting_evidence": {
+          "page": 44,
+          "line": 14,
+          "quote": "loans; is that correct? A I have -- I have reviewed the materials that --"
+        },
+        "kind": "new_topic",
+        "summary": "Witness explains that her report does not opine on legal enforceability but identifies missing loan documents (promissory notes, disclosures) as material defects.",
+        "subtopic": "PEAKS loan enforceability and documentation defects",
+        "semantic_validation": {
+          "valid": false,
+          "reasons": [
+            "supporting evidence is not contained in the cited transcript span"
+          ]
+        }
+      },
+      {
+        "topic": "Regulatory and Enforcement History: CFPB, SEC, and State AG Actions Against ITT/PEAKS",
+        "start_page": 67,
+        "start_line": 1,
+        "end_page": 75,
+        "end_line": 23,
+        "supporting_evidence": {
+          "page": 67,
+          "line": 1,
+          "quote": "Q You reference a 2012 Consumer Financial Protection Bureau Civil Investigative"
+        },
+        "kind": "new_topic",
+        "summary": "Review of the CFPB Civil Investigative Demand, CFPB/SEC actions, and multi-state AG investigations into ITT, with the witness repeatedly confirming these focused on ITT, not on the Vervent defendants.",
+        "subtopic": "Regulatory and enforcement actions involving ITT and PEAKS",
+        "semantic_validation": {
+          "valid": false,
+          "reasons": [
+            "topic/subtopic has insufficient lexical support in transcript span (coverage=0.27)"
+          ]
+        }
+      },
+      {
+        "topic": "Witness's Self-Assessment as a Non-Investigator",
+        "start_page": 76,
+        "start_line": 1,
+        "end_page": 78,
+        "end_line": 23,
+        "supporting_evidence": {
+          "page": 76,
+          "line": 1,
+          "quote": "MR. PURCELL: Let's take a break. MR. BLOOD: Okay."
+        },
+        "kind": "new_topic",
+        "summary": "Witness clarifies she is a policy researcher, not a professional investigator, and explains that the mere existence of an investigation does not establish wrongdoing.",
+        "subtopic": "Witness's role and limitations as a non-investigator",
+        "semantic_validation": {
+          "valid": false,
+          "reasons": [
+            "topic/subtopic has insufficient lexical support in transcript span (coverage=0.20)"
+          ]
+        }
+      }
+    ],
+    "final_topic_count_after_merge": 15
   }
 }
